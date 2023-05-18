@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         scoreTextView = findViewById(R.id.scoreTextView)
 
         startButton.setOnClickListener { onStartButtonClicked() }
+
     }
 
     private fun onStartButtonClicked() {

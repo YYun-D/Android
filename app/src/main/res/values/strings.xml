@@ -3,7 +3,7 @@
     <string name="start_button_label">시작</string>
     <string name="reset_button_label">재시작</string>
     <string name="game_over_message">게임 종료</string>
-    <string name="default_timer_label">00:00</string>
+    <string name="default_timer_label">60 초</string>
     <string name="timer_label">%s 초</string>
     <string name="score_label">%d</string>
     <string name="wrong_word_dialog_title">틀렸습니다</string>
