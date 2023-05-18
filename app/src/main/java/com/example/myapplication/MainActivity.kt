@@ -1,7 +1,7 @@
 package com.example.myapplication
 
-import android.content.Context
-import android.content.SharedPreferences
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.view.View
@@ -17,15 +17,12 @@ class MainActivity : AppCompatActivity() {
     private lateinit var startButton: Button
     private lateinit var timerTextView: TextView
     private lateinit var scoreTextView: TextView
-    private lateinit var rankingTextView: TextView
 
     private lateinit var countDownTimer: CountDownTimer
     private var gameTimeMillis: Long = 60000 // 60 seconds
     private var timeLeftMillis: Long = 0
     private var gameStarted = false
     private var score = 0
-
-    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,9 +33,6 @@ class MainActivity : AppCompatActivity() {
         startButton = findViewById(R.id.startButton)
         timerTextView = findViewById(R.id.timerTextView)
         scoreTextView = findViewById(R.id.scoreTextView)
-        rankingTextView = findViewById(R.id.rankingTextView)
-
-        sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE)
 
         startButton.setOnClickListener { onStartButtonClicked() }
     }
@@ -73,8 +67,6 @@ class MainActivity : AppCompatActivity() {
                 startButton.text = getString(R.string.start_button_label)
                 inputEditText.isEnabled = false
                 wordTextView.text = getString(R.string.game_over_message)
-                saveScore()
-                showRanking()
             }
         }
         countDownTimer.start()
@@ -102,32 +94,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun checkWord(view: View) {
-        if (gameStarted) {
-            val inputWord = inputEditText.text.toString()
-            val displayedWord = wordTextView.text.toString()
+        val inputWord = inputEditText.text.toString()
+        val displayedWord = wordTextView.text.toString()
 
-            if (inputWord.equals(displayedWord, ignoreCase = true)) {
-                score++
-                scoreTextView.text = getString(R.string.score_label, score)
-            }
+        if (inputWord.isEmpty()) {
+            return
+        }
 
-            inputEditText.text.clear()
+        if (inputWord.equals(displayedWord, ignoreCase = true)) {
+            score++
+            scoreTextView.text = getString(R.string.score_label, score)
             generateRandomWord()
+        } else {
+            showWrongWordDialog()
         }
+
+        inputEditText.text.clear()
     }
 
-    private fun saveScore() {
-        val editor = sharedPreferences.edit()
-        val savedScore = sharedPreferences.getInt("Score", 0)
-
-        if (score > savedScore) {
-            editor.putInt("Score", score)
-            editor.apply()
+    private fun showWrongWordDialog() {
+        val alertDialogBuilder = AlertDialog.Builder(this)
+        alertDialogBuilder.setTitle(R.string.wrong_word_dialog_title)
+        alertDialogBuilder.setMessage(R.string.wrong_word_dialog_message)
+        alertDialogBuilder.setPositiveButton(R.string.wrong_word_dialog_button) { dialog, _ ->
+            dialog.dismiss()
         }
-    }
 
-    private fun showRanking() {
-        val savedScore = sharedPreferences.getInt("Score", 0)
-        rankingTextView.text = getString(R.string.ranking_label, savedScore)
+        val alertDialog = alertDialogBuilder.create()
+        alertDialog.show()
     }
 }
